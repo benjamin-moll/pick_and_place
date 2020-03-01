@@ -8,11 +8,13 @@ const int leftButton = 4;
 const int rightButton = 5;
 const int mouseButton = 6;
 
+
 int range = 5;              // output range of X or Y movement; affects movement speed
 int responseDelay = 10;     // response delay of the mouse, in ms
 
 
 void setup() {
+  //Serial.begin(9600);
   // initialize the buttons' inputs:
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
@@ -25,11 +27,18 @@ void setup() {
 
 void loop() {
   // read the buttons:
+  
   int upState = digitalRead(upButton);
   int downState = digitalRead(downButton);
   int rightState = digitalRead(rightButton);
   int leftState = digitalRead(leftButton);
   int clickState = digitalRead(mouseButton);
+  int rangeState = analogRead(A7);
+
+  //read the value from the pot and map it to range
+  range = map(range,1, 1023, 1, 20);
+  //Serial.print(range);
+  
 
   // calculate the movement distance based on the button states:
   int  xDistance = (leftState - rightState) * range;
