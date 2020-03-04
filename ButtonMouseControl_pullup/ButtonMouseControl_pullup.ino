@@ -14,13 +14,15 @@ int responseDelay = 10;     // response delay of the mouse, in ms
 
 
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
+  
   // initialize the buttons' inputs:
   pinMode(upButton, INPUT_PULLUP);
   pinMode(downButton, INPUT_PULLUP);
   pinMode(leftButton, INPUT_PULLUP);
   pinMode(rightButton, INPUT_PULLUP);
   pinMode(mouseButton, INPUT_PULLUP);
+  
   // initialize mouse control:
   Mouse.begin();
 }
@@ -36,8 +38,8 @@ void loop() {
   int rangeState = analogRead(A7);
 
   //read the value from the pot and map it to range
-  range = map(range,1, 1023, 1, 20);
-  //Serial.print(range);
+  range = map(rangeState, 0, 1023, 1, 20);
+  Serial.println(range);
   
 
   // calculate the movement distance based on the button states:
