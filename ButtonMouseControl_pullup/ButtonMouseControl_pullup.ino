@@ -16,7 +16,8 @@ const int encoderButton = 10;
 // set encoder
 Encoder knob(12, 11);
 
-int lastKnobState = -1;
+int lastKnobStateX = -1;
+int lastKnobStateY = -1;
 int timestamp = 0;
 
 int knobChange;
@@ -39,7 +40,7 @@ int stepDownState;
 int clickState;
 int homeState;
 int encoderBtnState;
-int encoderBtnXYState; //TODO: USE ME
+int encoderBtnXYState = 0;
 int knobState;
 
 void setup()
@@ -68,13 +69,10 @@ void loop()
 	downState = digitalRead(downButton);
 	rightState = digitalRead(rightButton);
 	leftState = digitalRead(leftButton);
-
 	stepUpState = digitalRead(stepUp);
 	stepDownState = digitalRead(stepDown);
-
 	clickState = digitalRead(mouseButton);
 	homeState = digitalRead(homeButton);
-
 	encoderBtnState = digitalRead(encoderButton);
 
 	// read encoder
@@ -131,7 +129,35 @@ void mousePress()
 
 void encoderMove()
 {
-	knobChange = knobState - lastKnobState;
+	whichDirection();
+
+	if (encoderBtnXYState == 0)
+	{
+		encoderMoveX();
+	}
+	else
+	{
+		encoderMoveY();
+	}
+}
+
+void whichDirection() {	
+	if (encoderBtnState == LOW)
+	{
+		if (encoderBtnXYState == 0)
+		{
+			encoderBtnXYState == 0;
+		}
+		else
+		{
+			encoderBtnXYState == 1;
+		}
+	}
+}
+
+void encoderMoveX()
+{
+	knobChange = knobState - lastKnobStateX;
 
 	if (abs(knobChange) >= 2)
 	{
@@ -146,18 +172,29 @@ void encoderMove()
 		}
 
 		// save knobState for next time through loop
-		lastKnobState = knobState;
+		lastKnobStateX = knobState;
 	}
-}
-
-void encoderMoveX()
-{
-	
 }
 
 void encoderMoveY()
 {
+	knobChange = knobState - lastKnobStateY;
+	
+	if (abs(knobChange) >= 2)
+	{
+		// get the direction (-1 or 1)
+		int knobDirection = (knobChange / abs(knobChange));
 
+		int yState = knobDirection * range;
+
+		if (knobDirection != 0)
+		{
+			Mouse.move(xDistance, yState, 0);
+		}
+
+		// save knobState for next time through loop
+		lastKnobStateY = knobState;
+	}
 }
 
 void home()
