@@ -19,83 +19,167 @@ Encoder knob(12, 11);
 int lastKnobState = -1;
 int timestamp = 0;
 
+int knobChange;
+
 // output range of X or Y movement
 // affects movement speed
 int range = 5;
 int responseDelay = 10;
 
-void setup() {
-  Serial.begin(9600);
+int xDistance;
+int yDistance;
 
-  // initialize the button inputs
-  pinMode(upButton, INPUT_PULLUP);
-  pinMode(downButton, INPUT_PULLUP);
-  pinMode(leftButton, INPUT_PULLUP);
-  pinMode(rightButton, INPUT_PULLUP);
-  pinMode(stepUp, INPUT_PULLUP);
-  pinMode(stepDown, INPUT_PULLUP);
-  pinMode(mouseButton, INPUT_PULLUP);
-  pinMode(homeButton, INPUT_PULLUP);
-  pinMode(encoderButton, INPUT_PULLUP);
-  
-  // initialize mouse control
-  Mouse.begin();
+// states
+int upState;
+int downState;
+int rightState;
+int leftState;
+int stepUpState;
+int stepDownState;
+int clickState;
+int homeState;
+int encoderBtnState;
+int encoderBtnXYState; //TODO: USE ME
+int knobState;
+
+void setup()
+{
+	Serial.begin(9600);
+
+	// initialize the button inputs
+	pinMode(upButton, INPUT_PULLUP);
+	pinMode(downButton, INPUT_PULLUP);
+	pinMode(leftButton, INPUT_PULLUP);
+	pinMode(rightButton, INPUT_PULLUP);
+	pinMode(stepUp, INPUT_PULLUP);
+	pinMode(stepDown, INPUT_PULLUP);
+	pinMode(mouseButton, INPUT_PULLUP);
+	pinMode(homeButton, INPUT_PULLUP);
+	pinMode(encoderButton, INPUT_PULLUP);
+
+	// initialize mouse control
+	Mouse.begin();
 }
 
-void loop() {
-  // read the buttons:
+void loop()
+{
+	// read buttons
+	upState = digitalRead(upButton);
+	downState = digitalRead(downButton);
+	rightState = digitalRead(rightButton);
+	leftState = digitalRead(leftButton);
 
-  int upState = digitalRead(upButton);
-  int downState = digitalRead(downButton);
-  int rightState = digitalRead(rightButton);
-  int leftState = digitalRead(leftButton);
+	stepUpState = digitalRead(stepUp);
+	stepDownState = digitalRead(stepDown);
 
-  int clickState = digitalRead(mouseButton);
+	clickState = digitalRead(mouseButton);
+	homeState = digitalRead(homeButton);
 
-//   int rangeState = analogRead(A7); TODO: This is a button now
+	encoderBtnState = digitalRead(encoderButton);
 
-  int knobState = knob.read();
+	// read encoder
+	knobState = knob.read();
 
-  //read the value from the pot and map it to range
-  //range = map(rangeState, 0, 1023, 1, 20); TODO: This is a button now
-  range = 5;
+	// check if mouse has moved
+	moveMouse();
 
+	// check if mouse has been pressed
+	mousePress();
 
-  // calculate the movement distance based on the button states
-  int  xDistance = (leftState - rightState) * range;
-  int  yDistance = (upState - downState) * range;
+	// check if encoder has moved
+	encoderMove();
 
-  // if X or Y is non-zero, move
-  if ((xDistance != 0) || (yDistance != 0)) {
-    Mouse.move(xDistance, yDistance, 0);
-  }
+	// check if homing button has been pressed
+	home();
 
-  // if the mouse button is pressed
-  if (clickState == LOW) {
-    // if the mouse is not pressed, press it
-    if (!Mouse.isPressed(MOUSE_LEFT)) {
-      Mouse.press(MOUSE_LEFT);
-    } else {
-      Mouse.release(MOUSE_LEFT);
-    }
-  }
+	// check if change step up or down has been pressed
+	changeStep();
 
-  int knobChange = knobState - lastKnobState;
-  
-  if (abs(knobChange) >= 2) {
-    // get the direction (-1 or 1)
-    int knobDirection = (knobChange / abs(knobChange));
-    
-    int xState = knobDirection * range;
+	// a classic delay
+	delay(responseDelay);
+}
 
-    if (knobDirection != 0) {
-      Mouse.move(xState, yDistance, 0);
-    }
-    
-    // save knobState for next time through loop
-    lastKnobState = knobState;
-  }
+void moveMouse()
+{
+	// calculate the movement distance based on the button states
+	xDistance = (leftState - rightState) * range;
+	yDistance = (upState - downState) * range;
 
-  // a delay so the mouse doesn't move too fast
-  delay(responseDelay);
+	// if X or Y is non-zero, move
+	if ((xDistance != 0) || (yDistance != 0))
+	{
+		Mouse.move(xDistance, yDistance, 0);
+	}
+}
+
+void mousePress()
+{
+	// if the mouse button is pressed
+	if (clickState == LOW)
+	{
+		// if the mouse is not pressed, press it
+		if (!Mouse.isPressed(MOUSE_LEFT))
+		{
+			Mouse.press(MOUSE_LEFT);
+		}
+		else
+		{
+			Mouse.release(MOUSE_LEFT);
+		}
+	}
+}
+
+void encoderMove()
+{
+	knobChange = knobState - lastKnobState;
+
+	if (abs(knobChange) >= 2)
+	{
+		// get the direction (-1 or 1)
+		int knobDirection = (knobChange / abs(knobChange));
+
+		int xState = knobDirection * range;
+
+		if (knobDirection != 0)
+		{
+			Mouse.move(xState, yDistance, 0);
+		}
+
+		// save knobState for next time through loop
+		lastKnobState = knobState;
+	}
+}
+
+void encoderMoveX()
+{
+	
+}
+
+void encoderMoveY()
+{
+
+}
+
+void home()
+{
+	if (homeState == LOW)
+	{
+		xDistance = 0;
+		yDistance = 0;
+
+		Mouse.move(xDistance, yDistance, 0);
+	}
+}
+
+void changeStep()
+{
+	// read the value from the pot and map it to range
+	// int rangeState = analogRead(A7); TODO: This is a button now
+	// range = map(rangeState, 0, 1023, 1, 20); TODO: This is a button now
+}
+
+void encoderPress()
+{
+	stepUpState = digitalRead(stepUp);
+	stepDownState = digitalRead(stepDown);
 }
