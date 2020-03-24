@@ -91,7 +91,7 @@ void loop()
 	home();
 
 	// check if change step up or down has been pressed
-	changeStep();
+	changeRange();
 
 	// a classic delay
 	delay(responseDelay);
@@ -141,7 +141,8 @@ void encoderMove()
 	}
 }
 
-void whichDirection() {	
+void whichDirection()
+{
 	if (encoderBtnState == LOW)
 	{
 		if (encoderBtnXYState == 0)
@@ -179,7 +180,7 @@ void encoderMoveX()
 void encoderMoveY()
 {
 	knobChange = knobState - lastKnobStateY;
-	
+
 	if (abs(knobChange) >= 2)
 	{
 		// get the direction (-1 or 1)
@@ -208,11 +209,23 @@ void home()
 	}
 }
 
-void changeStep()
+void changeRange()
 {
-	// read the value from the pot and map it to range
-	// int rangeState = analogRead(A7); TODO: This is a button now
-	// range = map(rangeState, 0, 1023, 1, 20); TODO: This is a button now
+	if (stepUpState == LOW)
+	{
+		if (range > 1)
+		{
+			range = range--;
+		}
+	}
+
+	if (stepDownState == LOW)
+	{
+		if (range < 20)
+		{
+			range = range++;
+		}
+	}
 }
 
 void encoderPress()
