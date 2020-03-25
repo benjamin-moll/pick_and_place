@@ -41,6 +41,7 @@ int knobChange;
 // affects movement speed
 int range = 5;
 int responseDelay = 20;
+// TODO: Proper debouncing instead of delay
 
 int xDistance;
 int yDistance;
@@ -127,19 +128,26 @@ void moveMouse()
 
 void mousePress()
 {
-  // if the mouse button is pressed
-  if (clickState == LOW)
-  {
-    // if the mouse is not pressed, press it
-    if (!Mouse.isPressed(MOUSE_LEFT))
-    {
-      Mouse.press(MOUSE_LEFT);
-    }
-    else
-    {
-      Mouse.release(MOUSE_LEFT);
-    }
-  }
+//   if (clickState == LOW)
+//   {
+//     // if the mouse is not pressed, press it
+//     if (!Mouse.isPressed(MOUSE_LEFT))
+//     {
+//       Mouse.press(MOUSE_LEFT);
+//     }
+//     else
+//     {
+//       Mouse.release(MOUSE_LEFT);
+//     }
+//   }
+	if (clickState == LOW)
+	{
+		Mouse.press(MOUSE_LEFT);
+	}
+	else
+	{
+		Mouse.release(MOUSE_LEFT);
+	}
 }
 
 void encoderMove()
