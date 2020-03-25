@@ -217,10 +217,7 @@ void home()
 {
   if (homeState == LOW)
   {
-    xDistance = 0;
-    yDistance = 0;
-
-    Mouse.move(xDistance, yDistance, 0);
+    Mouse.move(-1000000, -1000000, 0);
   }
 }
 
