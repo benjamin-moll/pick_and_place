@@ -40,7 +40,7 @@ int knobChange;
 // output range of X or Y movement
 // affects movement speed
 int range = 5;
-int responseDelay = 10;
+int responseDelay = 20;
 
 int xDistance;
 int yDistance;
@@ -225,19 +225,21 @@ void changeRange()
 {
   if (stepUpState == LOW)
   {
-    if (range > 1)
+    if (range < 20)
     {
-      range = range--;
+      range = range + 1;
     }
   }
 
   if (stepDownState == LOW)
   {
-    if (range < 20)
+    if (range > 1)
     {
-      range = range++;
+      range = range - 1;
     }
   }
+
+  delay(responseDelay);
 }
 
 void encoderPress()
